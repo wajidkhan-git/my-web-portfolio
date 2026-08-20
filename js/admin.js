@@ -176,6 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('project-title').value = project.title;
                     document.getElementById('project-category').value = project.category;
                     document.getElementById('project-image').value = project.image;
+                    const preview = document.getElementById('project-image-preview');
+                    if (preview) preview.src = project.image || 'assets/profile.jpg';
                     document.getElementById('project-github').value = project.github || '';
                     document.getElementById('project-demo').value = project.demo || '';
                     
@@ -208,6 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
             projectForm.reset();
             document.getElementById('project-id').value = '';
             document.getElementById('project-image').value = 'assets/profile.jpg';
+            const preview = document.getElementById('project-image-preview');
+            if (preview) preview.src = 'assets/profile.jpg';
             projectModalTitle.textContent = 'Add New Project';
             projectModal.style.display = 'flex';
         });
@@ -228,6 +232,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle Form Submit
+    const imageFileInput = document.getElementById('project-image-file');
+    const imagePreview = document.getElementById('project-image-preview');
+    const imageUrlInput = document.getElementById('project-image');
+
+    if (imageFileInput) {
+        imageFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64String = event.target.result;
+                    imagePreview.src = base64String;
+                    imageUrlInput.value = base64String;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (imageUrlInput) {
+        imageUrlInput.addEventListener('input', function() {
+            imagePreview.src = this.value || 'assets/profile.jpg';
+        });
+    }
+
     if (projectForm) {
         projectForm.addEventListener('submit', (e) => {
             e.preventDefault();
