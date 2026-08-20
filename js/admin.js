@@ -153,6 +153,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const editBtns = document.querySelectorAll('.action-btn.edit');
+    editBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            showToast('Opening edit form... (Frontend Mockup)', 'success');
+        });
+    });
+
+    const addProjectBtn = document.querySelector('#manage-portfolio .card-header .btn-primary');
+    if (addProjectBtn) {
+        addProjectBtn.addEventListener('click', function() {
+            showToast('Opening add project form... (Frontend Mockup)', 'success');
+        });
+    }
+
     /* ==========================================================================
        File Upload Previews (Mockup)
        ========================================================================== */
