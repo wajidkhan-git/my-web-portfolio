@@ -40,14 +40,21 @@ function getProjects() {
 }
 
 function saveProjects(projects) {
-    localStorage.setItem('wajid_portfolio_projects', JSON.stringify(projects));
+    try {
+        localStorage.setItem('wajid_portfolio_projects', JSON.stringify(projects));
+        return true;
+    } catch (e) {
+        console.error("Storage Error:", e);
+        alert("Local storage is full! Please upload a smaller image.");
+        return false;
+    }
 }
 
 function addProject(project) {
     const projects = getProjects();
     project.id = Date.now().toString(); // Generate unique ID
     projects.push(project);
-    saveProjects(projects);
+    return saveProjects(projects);
 }
 
 function updateProject(id, updatedData) {
@@ -55,14 +62,15 @@ function updateProject(id, updatedData) {
     const index = projects.findIndex(p => p.id === id);
     if (index !== -1) {
         projects[index] = { ...projects[index], ...updatedData };
-        saveProjects(projects);
+        return saveProjects(projects);
     }
+    return false;
 }
 
 function deleteProject(id) {
     const projects = getProjects();
     const filtered = projects.filter(p => p.id !== id);
-    saveProjects(filtered);
+    return saveProjects(filtered);
 }
 
 /* 
@@ -86,14 +94,21 @@ function getSkills() {
 }
 
 function saveSkills(skills) {
-    localStorage.setItem('wajid_portfolio_skills', JSON.stringify(skills));
+    try {
+        localStorage.setItem('wajid_portfolio_skills', JSON.stringify(skills));
+        return true;
+    } catch (e) {
+        console.error("Storage Error:", e);
+        alert("Local storage is full!");
+        return false;
+    }
 }
 
 function addSkill(skill) {
     const skills = getSkills();
     skill.id = Date.now().toString();
     skills.push(skill);
-    saveSkills(skills);
+    return saveSkills(skills);
 }
 
 function updateSkill(id, updatedData) {
@@ -101,12 +116,13 @@ function updateSkill(id, updatedData) {
     const index = skills.findIndex(s => s.id === id);
     if (index !== -1) {
         skills[index] = { ...skills[index], ...updatedData };
-        saveSkills(skills);
+        return saveSkills(skills);
     }
+    return false;
 }
 
 function deleteSkill(id) {
     const skills = getSkills();
     const filtered = skills.filter(s => s.id !== id);
-    saveSkills(filtered);
+    return saveSkills(filtered);
 }
