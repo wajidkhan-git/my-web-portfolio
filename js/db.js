@@ -64,3 +64,49 @@ function deleteProject(id) {
     const filtered = projects.filter(p => p.id !== id);
     saveProjects(filtered);
 }
+
+/* 
+    Skills Database Logic
+*/
+
+const defaultSkills = [
+    { id: '1', name: 'HTML & CSS', percent: 90, icon: 'fas fa-code' },
+    { id: '2', name: 'JavaScript', percent: 85, icon: 'fab fa-js' },
+    { id: '3', name: 'React.js', percent: 80, icon: 'fab fa-react' },
+    { id: '4', name: 'Node.js', percent: 75, icon: 'fab fa-node-js' }
+];
+
+function getSkills() {
+    const skills = localStorage.getItem('wajid_portfolio_skills');
+    if (skills) {
+        return JSON.parse(skills);
+    }
+    localStorage.setItem('wajid_portfolio_skills', JSON.stringify(defaultSkills));
+    return defaultSkills;
+}
+
+function saveSkills(skills) {
+    localStorage.setItem('wajid_portfolio_skills', JSON.stringify(skills));
+}
+
+function addSkill(skill) {
+    const skills = getSkills();
+    skill.id = Date.now().toString();
+    skills.push(skill);
+    saveSkills(skills);
+}
+
+function updateSkill(id, updatedData) {
+    const skills = getSkills();
+    const index = skills.findIndex(s => s.id === id);
+    if (index !== -1) {
+        skills[index] = { ...skills[index], ...updatedData };
+        saveSkills(skills);
+    }
+}
+
+function deleteSkill(id) {
+    const skills = getSkills();
+    const filtered = skills.filter(s => s.id !== id);
+    saveSkills(filtered);
+}

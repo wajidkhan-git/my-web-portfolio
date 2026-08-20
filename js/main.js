@@ -198,6 +198,46 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPortfolio();
 
     /* ==========================================================================
+       Render Skills from LocalStorage
+       ========================================================================== */
+    const skillsGrid = document.getElementById('skills');
+
+    function renderSkills() {
+        if (!skillsGrid) return;
+
+        if (typeof getSkills === 'function') {
+            const skills = getSkills();
+            skillsGrid.innerHTML = '';
+            
+            skills.forEach((skill, index) => {
+                const delay = 0.1 * ((index % 8) + 1);
+                
+                const skillHtml = `
+                    <div class="skill-card reveal-up" style="--delay: ${delay}s">
+                        <i class="${skill.icon} skill-icon"></i>
+                        <h3>${skill.name}</h3>
+                        <div class="progress-bar"><div class="progress" style="width: ${skill.percent}%"></div></div>
+                    </div>
+                `;
+                skillsGrid.innerHTML += skillHtml;
+            });
+            
+            // Add the UI/UX Coming Soon card at the end
+            skillsGrid.innerHTML += `
+                <!-- UI/UX Coming Soon Card -->
+                <div class="skill-card ui-ux-card reveal-up" style="--delay: 0.9s">
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <i class="fas fa-pen-nib skill-icon highlight-icon"></i>
+                    <h3>UI/UX Design</h3>
+                    <p class="small-text">Currently expanding my skills in UI/UX design.</p>
+                </div>
+            `;
+        }
+    }
+
+    renderSkills();
+
+    /* ==========================================================================
        Portfolio Filtering
        ========================================================================== */
     const filterBtns = document.querySelectorAll('.filter-btn');

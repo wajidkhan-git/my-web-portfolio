@@ -279,7 +279,119 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             projectModal.style.display = 'none';
+            projectModal.style.display = 'none';
             renderAdminProjects();
+        });
+    }
+
+    /* ==========================================================================
+       Manage Skills (CRUD)
+       ========================================================================== */
+    const adminSkillsTable = document.getElementById('admin-skills-table-body');
+    const skillModal = document.getElementById('skill-modal');
+    const skillModalTitle = document.getElementById('skill-modal-title');
+    const closeSkillModalBtn = document.getElementById('close-skill-modal');
+    const skillForm = document.getElementById('skill-form');
+
+    function renderAdminSkills() {
+        if (!adminSkillsTable) return;
+        
+        const skills = getSkills();
+        adminSkillsTable.innerHTML = '';
+        
+        skills.forEach(skill => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${skill.name}</td>
+                <td>${skill.percent}%</td>
+                <td><i class="${skill.icon}"></i> ${skill.icon}</td>
+                <td>
+                    <button class="action-btn edit skill-edit-btn" data-id="${skill.id}"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn delete skill-delete-btn" data-id="${skill.id}"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            adminSkillsTable.appendChild(tr);
+        });
+
+        // Re-bind Edit Buttons
+        document.querySelectorAll('.skill-edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const skill = getSkills().find(s => s.id === id);
+                if (skill) {
+                    document.getElementById('skill-id').value = skill.id;
+                    document.getElementById('skill-name').value = skill.name;
+                    document.getElementById('skill-percent').value = skill.percent;
+                    document.getElementById('skill-icon').value = skill.icon;
+                    
+                    skillModalTitle.textContent = 'Edit Skill';
+                    skillModal.style.display = 'flex';
+                }
+            });
+        });
+
+        // Re-bind Delete Buttons
+        document.querySelectorAll('.skill-delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(confirm("Are you sure you want to delete this skill?")) {
+                    const id = this.getAttribute('data-id');
+                    deleteSkill(id);
+                    showToast('Skill deleted successfully!', 'success');
+                    renderAdminSkills();
+                }
+            });
+        });
+    }
+
+    renderAdminSkills();
+
+    // Open Add Skill Modal
+    const addSkillBtn = document.getElementById('add-skill-btn');
+    if (addSkillBtn) {
+        addSkillBtn.addEventListener('click', function() {
+            skillForm.reset();
+            document.getElementById('skill-id').value = '';
+            skillModalTitle.textContent = 'Add New Skill';
+            skillModal.style.display = 'flex';
+        });
+    }
+
+    // Close Skill Modal
+    if (closeSkillModalBtn) {
+        closeSkillModalBtn.addEventListener('click', () => {
+            skillModal.style.display = 'none';
+        });
+    }
+    
+    // Close modal on click outside
+    window.addEventListener('click', (e) => {
+        if (e.target === skillModal) {
+            skillModal.style.display = 'none';
+        }
+    });
+
+    // Handle Form Submit for Skill
+    if (skillForm) {
+        skillForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('skill-id').value;
+            const skillData = {
+                name: document.getElementById('skill-name').value,
+                percent: parseInt(document.getElementById('skill-percent').value),
+                icon: document.getElementById('skill-icon').value
+            };
+            
+            if (id) {
+                updateSkill(id, skillData);
+                showToast('Skill updated successfully!', 'success');
+            } else {
+                addSkill(skillData);
+                showToast('Skill added successfully!', 'success');
+            }
+            
+            skillModal.style.display = 'none';
+            renderAdminSkills();
         });
     }
 
