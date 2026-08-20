@@ -157,10 +157,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==========================================================================
+       Render Portfolio from LocalStorage
+       ========================================================================== */
+    const portfolioGrid = document.querySelector('.portfolio-grid');
+    
+    function renderPortfolio() {
+        if (!portfolioGrid) return;
+        
+        // getProjects() comes from db.js
+        if (typeof getProjects === 'function') {
+            const projects = getProjects();
+            portfolioGrid.innerHTML = '';
+            
+            projects.forEach((project, index) => {
+                const delay = 0.1 * ((index % 4) + 1); // Staggered animation delay
+                
+                const itemHtml = `
+                    <div class="portfolio-item ${project.category} reveal-up" style="--delay: ${delay}s">
+                        <div class="portfolio-img">
+                            <img src="${project.image}" alt="${project.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--border-radius-md);">
+                            <div class="portfolio-overlay">
+                                <div class="portfolio-links">
+                                    ${project.demo ? `<a href="${project.demo}" target="_blank" class="btn-icon"><i class="fas fa-external-link-alt"></i> Live Demo</a>` : ''}
+                                    ${project.github ? `<a href="${project.github}" target="_blank" class="btn-icon"><i class="fab fa-github"></i> GitHub</a>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portfolio-info">
+                            <h3>${project.title}</h3>
+                            <p>Category: <span style="text-transform: capitalize;">${project.category}</span></p>
+                        </div>
+                    </div>
+                `;
+                portfolioGrid.innerHTML += itemHtml;
+            });
+        }
+    }
+
+    // Call render before setting up filters
+    renderPortfolio();
+
+    /* ==========================================================================
        Portfolio Filtering
        ========================================================================== */
     const filterBtns = document.querySelectorAll('.filter-btn');
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -170,8 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
 
             const filterValue = btn.getAttribute('data-filter');
+            const currentPortfolioItems = document.querySelectorAll('.portfolio-item');
 
-            portfolioItems.forEach(item => {
+            currentPortfolioItems.forEach(item => {
                 if (filterValue === 'all' || item.classList.contains(filterValue)) {
                     item.style.display = 'block';
                     // Trigger reflow for animation

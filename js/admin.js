@@ -137,33 +137,120 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const deleteBtns = document.querySelectorAll('.action-btn.delete');
-    deleteBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            if(confirm("Are you sure you want to delete this item? (This is a mock action)")) {
-                showToast('Item deleted successfully! (Mock)', 'success');
-                // Mock remove row if in a table
-                const row = this.closest('tr');
-                if(row) row.style.display = 'none';
-                
-                // Mock remove item if in skills list
-                const item = this.closest('.skill-edit-item');
-                if(item) item.style.display = 'none';
-            }
-        });
-    });
+    /* ==========================================================================
+       Portfolio CRUD Operations (LocalStorage)
+       ========================================================================== */
+    const adminPortfolioTable = document.getElementById('admin-portfolio-table-body');
+    const projectModal = document.getElementById('project-modal');
+    const projectForm = document.getElementById('project-form');
+    const projectModalTitle = document.getElementById('project-modal-title');
+    const closeModalBtn = projectModal.querySelector('.close-modal');
 
-    const editBtns = document.querySelectorAll('.action-btn.edit');
-    editBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            showToast('Opening edit form... (Frontend Mockup)', 'success');
+    function renderAdminProjects() {
+        if (!adminPortfolioTable) return;
+        
+        const projects = getProjects();
+        adminPortfolioTable.innerHTML = '';
+        
+        projects.forEach(project => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><img src="${project.image}" alt="Img" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;"></td>
+                <td>${project.title}</td>
+                <td>${project.category}</td>
+                <td>
+                    <button class="action-btn edit" data-id="${project.id}"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn delete" data-id="${project.id}"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            adminPortfolioTable.appendChild(tr);
         });
-    });
 
+        // Re-bind Edit Buttons
+        document.querySelectorAll('.action-btn.edit').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const project = getProjects().find(p => p.id === id);
+                if (project) {
+                    document.getElementById('project-id').value = project.id;
+                    document.getElementById('project-title').value = project.title;
+                    document.getElementById('project-category').value = project.category;
+                    document.getElementById('project-image').value = project.image;
+                    document.getElementById('project-github').value = project.github || '';
+                    document.getElementById('project-demo').value = project.demo || '';
+                    
+                    projectModalTitle.textContent = 'Edit Project';
+                    projectModal.style.display = 'flex';
+                }
+            });
+        });
+
+        // Re-bind Delete Buttons
+        document.querySelectorAll('.action-btn.delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(confirm("Are you sure you want to delete this project?")) {
+                    const id = this.getAttribute('data-id');
+                    deleteProject(id);
+                    showToast('Project deleted successfully!', 'success');
+                    renderAdminProjects();
+                }
+            });
+        });
+    }
+
+    // Initialize Render
+    renderAdminProjects();
+
+    // Open Add Project Modal
     const addProjectBtn = document.querySelector('#manage-portfolio .card-header .btn-primary');
     if (addProjectBtn) {
         addProjectBtn.addEventListener('click', function() {
-            showToast('Opening add project form... (Frontend Mockup)', 'success');
+            projectForm.reset();
+            document.getElementById('project-id').value = '';
+            document.getElementById('project-image').value = 'assets/profile.jpg';
+            projectModalTitle.textContent = 'Add New Project';
+            projectModal.style.display = 'flex';
+        });
+    }
+
+    // Close Modal
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            projectModal.style.display = 'none';
+        });
+    }
+    
+    // Close modal on click outside
+    window.addEventListener('click', (e) => {
+        if (e.target === projectModal) {
+            projectModal.style.display = 'none';
+        }
+    });
+
+    // Handle Form Submit
+    if (projectForm) {
+        projectForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('project-id').value;
+            const projectData = {
+                title: document.getElementById('project-title').value,
+                category: document.getElementById('project-category').value,
+                image: document.getElementById('project-image').value,
+                github: document.getElementById('project-github').value,
+                demo: document.getElementById('project-demo').value
+            };
+            
+            if (id) {
+                updateProject(id, projectData);
+                showToast('Project updated successfully!', 'success');
+            } else {
+                addProject(projectData);
+                showToast('Project added successfully!', 'success');
+            }
+            
+            projectModal.style.display = 'none';
+            renderAdminProjects();
         });
     }
 
