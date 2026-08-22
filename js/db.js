@@ -5,25 +5,17 @@
 const defaultProjects = [
     {
         id: '1',
-        title: 'E-Commerce Dashboard',
-        category: 'mern',
-        image: 'assets/profile.jpg',
+        title: 'portfolio for salon',
+        category: 'frontend',
+        image: 'assets/salon-image.jpg',
         github: '#',
         demo: '#'
     },
     {
         id: '2',
-        title: 'Real Estate Portal',
-        category: 'react',
-        image: 'assets/profile.jpg',
-        github: '#',
-        demo: '#'
-    },
-    {
-        id: '3',
-        title: 'Task Management App',
-        category: 'fullstack',
-        image: 'assets/profile.jpg',
+        title: 'portfolio for guest posting',
+        category: 'frontend',
+        image: 'assets/guest-posting.jpg',
         github: '#',
         demo: '#'
     }
