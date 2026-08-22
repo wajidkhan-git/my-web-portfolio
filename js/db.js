@@ -7,7 +7,7 @@ const defaultProjects = [
         id: '1',
         title: 'Guest posting portfolio',
         category: 'frontend',
-        image: 'assets/guest posting.jpg',
+        image: 'assets/guestpost (1).png',
         github: 'https://github.com/wajidkhan-git/',
         demo: 'https://wajidullah-guestposts.vercel.app/'
     },
@@ -15,7 +15,7 @@ const defaultProjects = [
         id: '2',
         title: 'salon portfolio',
         category: 'frontend',
-        image: 'assets/salon.jpg',
+        image: 'assets/salon.png',
         github: 'https://github.com/wajidkhan-git/',
         demo: 'https://wajidkhan-git.github.io/salon-portfolio/'
     },
@@ -23,7 +23,7 @@ const defaultProjects = [
         id: '3',
         title: 'web portfolio',
         category: 'frontend',
-        image: 'assets/web portfolio.jpg',
+        image: 'assets/web port.png',
         github: 'https://github.com/wajidkhan-git/',
         demo: 'https://wajidkhan-git.github.io/web-portfolio/'
     }
