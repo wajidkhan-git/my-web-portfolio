@@ -130,8 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ==========================================================================
        Scroll Reveal Animations
        ========================================================================== */
-    const revealElements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right, .skill-card');
-
     const revealOptions = {
         threshold: 0.15,
         rootMargin: "0px 0px -50px 0px"
@@ -143,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             entry.target.classList.add('active');
             
-            // Special handling for skill cards to trigger progress bar animation
             if (entry.target.classList.contains('skill-card')) {
                 entry.target.classList.add('animated');
             }
@@ -152,9 +149,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, revealOptions);
 
-    revealElements.forEach(el => {
+    // Initial observe for static elements
+    document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right').forEach(el => {
         revealObserver.observe(el);
     });
+
+    function observeNewElements(container) {
+        container.querySelectorAll('.reveal-up, .skill-card').forEach(el => {
+            revealObserver.observe(el);
+        });
+    }
 
     /* ==========================================================================
        Render Portfolio from LocalStorage
@@ -164,16 +168,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderPortfolio() {
         if (!portfolioGrid) return;
         
-        // getProjects() comes from db.js
         if (typeof getProjects === 'function') {
             const projects = getProjects();
             portfolioGrid.innerHTML = '';
             
             projects.forEach((project, index) => {
-                const delay = 0.1 * ((index % 4) + 1); // Staggered animation delay
+                const delay = 0.1 * ((index % 4) + 1); 
+                
+                // Add lower-case category matching class
+                const catClass = (project.category || '').toLowerCase();
                 
                 const itemHtml = `
-                    <div class="portfolio-item ${project.category} reveal-up" style="--delay: ${delay}s">
+                    <div class="portfolio-item ${catClass} reveal-up" style="--delay: ${delay}s">
                         <div class="portfolio-img">
                             <img src="${project.image}" alt="${project.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--border-radius-md);">
                             <div class="portfolio-overlay">
@@ -191,10 +197,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 portfolioGrid.innerHTML += itemHtml;
             });
+            
+            // Observe the newly added elements
+            observeNewElements(portfolioGrid);
         }
     }
 
-    // Call render before setting up filters
     renderPortfolio();
 
     /* ==========================================================================
@@ -222,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 skillsGrid.innerHTML += skillHtml;
             });
             
-            // Add the UI/UX Coming Soon card at the end
             skillsGrid.innerHTML += `
                 <!-- UI/UX Coming Soon Card -->
                 <div class="skill-card ui-ux-card reveal-up" style="--delay: 0.9s">
@@ -232,6 +239,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="small-text">Currently expanding my skills in UI/UX design.</p>
                 </div>
             `;
+            
+            // Observe the newly added elements
+            observeNewElements(skillsGrid);
         }
     }
 
@@ -244,30 +254,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove active class from all buttons
             filterBtns.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
             btn.classList.add('active');
 
-            const filterValue = btn.getAttribute('data-filter');
+            const filterValue = btn.getAttribute('data-filter').toLowerCase();
             const currentPortfolioItems = document.querySelectorAll('.portfolio-item');
 
             currentPortfolioItems.forEach(item => {
+                // Clear any existing timeouts to prevent race conditions
+                if (item.hideTimeout) clearTimeout(item.hideTimeout);
+                if (item.showTimeout) clearTimeout(item.showTimeout);
+
                 if (filterValue === 'all' || item.classList.contains(filterValue)) {
                     item.style.display = 'block';
-                    // Trigger reflow for animation
-                    item.style.animation = 'none';
-                    item.offsetHeight; /* trigger reflow */
-                    item.style.animation = null; 
+                    // Force reflow
+                    item.offsetHeight; 
                     
-                    setTimeout(() => {
+                    item.showTimeout = setTimeout(() => {
                         item.style.opacity = '1';
                         item.style.transform = 'translateY(0)';
-                    }, 50);
+                    }, 10);
                 } else {
                     item.style.opacity = '0';
                     item.style.transform = 'translateY(20px)';
-                    setTimeout(() => {
+                    
+                    item.hideTimeout = setTimeout(() => {
                         item.style.display = 'none';
                     }, 300);
                 }
