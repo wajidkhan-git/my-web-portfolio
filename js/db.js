@@ -5,19 +5,27 @@
 const defaultProjects = [
     {
         id: '1',
-        title: 'portfolio for salon',
+        title: 'Guest posting portfolio',
         category: 'frontend',
-        image: 'assets/salon-image.jpg',
-        github: '#',
-        demo: '#'
+        image: 'assets/guest posting.jpg',
+        github: 'https://github.com/wajidkhan-git/',
+        demo: 'https://wajidullah-guestposts.vercel.app/'
     },
     {
         id: '2',
-        title: 'portfolio for guest posting',
+        title: 'salon portfolio',
         category: 'frontend',
-        image: 'assets/guest-posting.jpg',
-        github: '#',
-        demo: '#'
+        image: 'assets/salon.jpg',
+        github: 'https://github.com/wajidkhan-git/',
+        demo: 'https://wajidkhan-git.github.io/salon-portfolio/'
+    },
+    {
+        id: '3',
+        title: 'web portfolio',
+        category: 'frontend',
+        image: 'assets/web portfolio.jpg',
+        github: 'https://github.com/wajidkhan-git/',
+        demo: 'https://wajidkhan-git.github.io/web-portfolio/'
     }
 ];
 
